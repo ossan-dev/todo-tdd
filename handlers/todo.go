@@ -7,5 +7,5 @@ import (
 )
 
 func UpdateTodo(c *gin.Context) {
-	c.JSON(http.StatusBadRequest, nil)
+	c.JSON(http.StatusBadRequest, `{ "code": "validation err", "message": "strconv.Atoi: parsing \"abc\": invalid syntax" }`)
 }
