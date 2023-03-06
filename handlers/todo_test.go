@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"todoapp/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/assert/v2"
@@ -25,7 +27,7 @@ func TestUpdateTodo_IdNotInteger(t *testing.T) {
 func TestUpdateTodo_IdNotInteger_Body(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
-	expectedBody := `"{ \"code\": \"validation err\", \"message\": \"strconv.Atoi: parsing \\\"abc\\\": invalid syntax\" }"`
+	var todoErr TodoErr
 
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
@@ -34,7 +36,9 @@ func TestUpdateTodo_IdNotInteger_Body(t *testing.T) {
 
 	UpdateTodo(c)
 
-	if w.Body.String() != expectedBody {
-		t.Errorf("expected %q got %q", expectedBody, w.Body.String())
+	if err := json.Unmarshal(w.Body.Bytes(), &todoErr); err != nil {
+		t.Fatalf("err not expected while unmarshaling: %v", err)
 	}
+
+	assert.Equal(t, models.ValidationErr, todoErr.Code)
 }
