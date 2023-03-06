@@ -1,7 +1,11 @@
 package handlers
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
 
 func UpdateTodo(c *gin.Context) {
-	c.JSON(400, nil)
+	c.JSON(http.StatusBadRequest, nil)
 }

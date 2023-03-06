@@ -1,10 +1,12 @@
 package handlers
 
 import (
+	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/assert/v2"
 )
 
 func TestUpdateTodo_IdNotInteger(t *testing.T) {
@@ -17,7 +19,5 @@ func TestUpdateTodo_IdNotInteger(t *testing.T) {
 
 	UpdateTodo(c)
 
-	if w.Code != 400 {
-		t.Fatalf("expected %d got %d", 400, w.Code)
-	}
+	assert.Equal(t, http.StatusBadRequest, w.Code)
 }
