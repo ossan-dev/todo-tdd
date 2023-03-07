@@ -20,7 +20,7 @@ func TestUpdateTodo_IdNotInteger(t *testing.T) {
 
 	UpdateTodo(c)
 
-	var todoErr TodoErr
+	var todoErr models.TodoErr
 	if err := json.Unmarshal(w.Body.Bytes(), &todoErr); err != nil {
 		t.Fatalf("err not expected while unmarshaling: %v", err)
 	}
@@ -32,13 +32,13 @@ func TestUpdateTodo_ValidationErr(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
-	req := httptest.NewRequest("PUT", "/todos", strings.NewReader(`{ "description": "", "is_completed": true, "due_date": "2023-05-04" }`))
+	req := httptest.NewRequest(http.MethodPut, "/todos", strings.NewReader(`{ "description": "", "is_completed": true, "due_date": "2023-05-04" }`))
 	c.Params = append(c.Params, gin.Param{Key: "id", Value: "1"})
 	c.Request = req
 
 	UpdateTodo(c)
 
-	var todoErr TodoErr
+	var todoErr models.TodoErr
 	if err := json.Unmarshal(w.Body.Bytes(), &todoErr); err != nil {
 		t.Fatalf("err not expected while unmarshaling: %v", err)
 	}
@@ -50,7 +50,7 @@ func TestUpdateTodo_NotFound(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
-	req := httptest.NewRequest("PUT", "/todos", strings.NewReader(`{ "description": "lorem ipsum", "is_completed": true, "due_date": "2023-05-04" }`))
+	req := httptest.NewRequest(http.MethodPut, "/todos", strings.NewReader(`{ "description": "lorem ipsum", "is_completed": true, "due_date": "2023-05-04" }`))
 	req.Header.Set("Content-Type", "application/json")
 	c.Params = append(c.Params, gin.Param{Key: "id", Value: "1"})
 	c.Request = req

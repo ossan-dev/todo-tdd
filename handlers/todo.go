@@ -8,11 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type TodoErr struct {
-	Code    string `json:"code"`
-	Message string `json:"message"`
-}
-
 type TodoDto struct {
 	Id          int    `json:"id" binding:"required"`
 	Description string `json:"description" binding:"required"`
@@ -24,13 +19,13 @@ func UpdateTodo(c *gin.Context) {
 	var todoDto TodoDto
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, TodoErr{Code: models.IdNotIntegerErr, Message: err.Error()})
+		c.JSON(http.StatusBadRequest, models.TodoErr{Code: models.IdNotIntegerErr, Message: err.Error()})
 		return
 	}
 	todoDto.Id = id
 	if err := c.ShouldBind(&todoDto); err != nil {
-		c.JSON(http.StatusBadRequest, TodoErr{Code: models.ValidationErr, Message: "strconv.Atoi: parsing \"abc\": invalid syntax\" }"})
+		c.JSON(http.StatusBadRequest, models.TodoErr{Code: models.ValidationErr, Message: err.Error()})
 		return
 	}
-	c.JSON(404, nil)
+	c.JSON(http.StatusNotFound, nil)
 }
