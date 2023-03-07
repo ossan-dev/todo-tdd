@@ -16,8 +16,8 @@ type TodoErr struct {
 func UpdateTodo(c *gin.Context) {
 	_, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, TodoErr{Code: models.IdNotIntegerErr, Message: "strconv.Atoi: parsing \"abc\": invalid syntax\" }"})
+		c.JSON(http.StatusBadRequest, TodoErr{Code: models.IdNotIntegerErr, Message: err.Error()})
 		return
 	}
-	c.JSON(http.StatusBadRequest, TodoErr{Code: "validation err", Message: "strconv.Atoi: parsing \"abc\": invalid syntax\" }"})
+	c.JSON(http.StatusBadRequest, TodoErr{Code: models.ValidationErr, Message: "strconv.Atoi: parsing \"abc\": invalid syntax\" }"})
 }

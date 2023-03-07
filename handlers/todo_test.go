@@ -50,5 +50,5 @@ func TestUpdateTodo_ValidationErr(t *testing.T) {
 	}
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
-	assert.Equal(t, "validation err", todoErr.Code)
+	assert.Equal(t, models.ValidationErr, todoErr.Code)
 }
