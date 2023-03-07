@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
 	"todoapp/models"
 
 	"github.com/gin-gonic/gin"
@@ -13,5 +14,10 @@ type TodoErr struct {
 }
 
 func UpdateTodo(c *gin.Context) {
-	c.JSON(http.StatusBadRequest, TodoErr{Code: models.IdNotIntegerErr, Message: "strconv.Atoi: parsing \"abc\": invalid syntax\" }"})
+	_, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, TodoErr{Code: models.IdNotIntegerErr, Message: "strconv.Atoi: parsing \"abc\": invalid syntax\" }"})
+		return
+	}
+	c.JSON(http.StatusBadRequest, TodoErr{Code: "validation err", Message: "strconv.Atoi: parsing \"abc\": invalid syntax\" }"})
 }
