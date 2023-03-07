@@ -6,7 +6,8 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
-	"todoapp/models"
+
+	"todotdd/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/assert/v2"

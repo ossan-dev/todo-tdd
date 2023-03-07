@@ -3,7 +3,8 @@ package handlers
 import (
 	"net/http"
 	"strconv"
-	"todoapp/models"
+
+	"todotdd/models"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,5 +28,5 @@ func UpdateTodo(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, models.TodoErr{Code: models.ValidationErr, Message: err.Error()})
 		return
 	}
-	c.JSON(http.StatusNotFound, nil)
+	c.JSON(http.StatusNotFound, models.TodoErr{Code: "unknown todo", Message: "unknown todo"})
 }
