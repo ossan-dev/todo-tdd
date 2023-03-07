@@ -3,6 +3,7 @@ package models
 const (
 	ValidationErr   = "validation err"
 	IdNotIntegerErr = "id not integer"
+	TodoNotFoundErr = "unknown todo"
 )
 
 type TodoErr struct {

@@ -28,5 +28,5 @@ func UpdateTodo(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, models.TodoErr{Code: models.ValidationErr, Message: err.Error()})
 		return
 	}
-	c.JSON(http.StatusNotFound, models.TodoErr{Code: "unknown todo", Message: "unknown todo"})
+	c.JSON(http.StatusNotFound, models.TodoErr{Code: models.TodoNotFoundErr, Message: "unknown todo"})
 }
