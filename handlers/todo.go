@@ -13,11 +13,24 @@ type TodoErr struct {
 	Message string `json:"message"`
 }
 
+type TodoDto struct {
+	Id          int    `json:"id" binding:"required"`
+	Description string `json:"description" binding:"required"`
+	IsCompleted bool   `json:"is_completed" binding:"required"`
+	DueDate     string `json:"due_date" binding:"required"`
+}
+
 func UpdateTodo(c *gin.Context) {
-	_, err := strconv.Atoi(c.Param("id"))
+	var todoDto TodoDto
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, TodoErr{Code: models.IdNotIntegerErr, Message: err.Error()})
 		return
 	}
-	c.JSON(http.StatusBadRequest, TodoErr{Code: models.ValidationErr, Message: "strconv.Atoi: parsing \"abc\": invalid syntax\" }"})
+	todoDto.Id = id
+	if err := c.ShouldBind(&todoDto); err != nil {
+		c.JSON(http.StatusBadRequest, TodoErr{Code: models.ValidationErr, Message: "strconv.Atoi: parsing \"abc\": invalid syntax\" }"})
+		return
+	}
+	c.JSON(404, nil)
 }
