@@ -7,6 +7,7 @@ import (
 	"todotdd/models"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type TodoDto struct {
@@ -14,6 +15,13 @@ type TodoDto struct {
 	Description string `json:"description" binding:"required"`
 	IsCompleted bool   `json:"is_completed" binding:"required"`
 	DueDate     string `json:"due_date" binding:"required"`
+}
+
+type Todo struct {
+	ID          int
+	Description string
+	IsCompleted bool
+	DueDate     string
 }
 
 func UpdateTodo(c *gin.Context) {
@@ -28,5 +36,20 @@ func UpdateTodo(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, models.TodoErr{Code: models.ValidationErr, Message: err.Error()})
 		return
 	}
+
+	todo := Todo{ID: todoDto.Id, Description: todoDto.Description, IsCompleted: todoDto.IsCompleted, DueDate: todoDto.DueDate}
+
+	dbKey, isFound := c.Keys["DB"]
+	if isFound {
+		db := dbKey.(*gorm.DB)
+		if db != nil {
+			err = db.First(&Todo{}, todo.ID).Updates(todo).Error
+			if err != nil {
+				c.JSON(500, err)
+				return
+			}
+		}
+	}
+
 	c.JSON(http.StatusNotFound, models.TodoErr{Code: models.TodoNotFoundErr, Message: "unknown todo"})
 }
