@@ -91,15 +91,20 @@ func TestUpdateTodo_DbError(t *testing.T) {
 		Header: make(http.Header),
 		URL:    &url.URL{},
 	}
-	c.Request.Method = "PUT"
+	c.Request.Method = http.MethodPut
 	c.Request.Header.Set("Content-Type", "application/json")
 	c.Request.Body = io.NopCloser(strings.NewReader(`{ "description": "lorem ipsum", "is_completed": true, "due_date": "2023-05-04" }`))
 	c.Params = append(c.Params, gin.Param{Key: "id", Value: "1"})
-	c.Set("DB", gormDb)
+	c.Set(DBKey, gormDb)
 
 	UpdateTodo(c)
 
-	assert.Equal(t, 500, w.Code)
+	var todoErr models.TodoErr
+	if err := json.Unmarshal(w.Body.Bytes(), &todoErr); err != nil {
+		t.Fatalf("err not expected while unmarshaling: %v", err)
+	}
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+	assert.Equal(t, models.DbErr, todoErr.Code)
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Error(err)
 	}
