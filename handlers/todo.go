@@ -33,7 +33,7 @@ func UpdateTodo(c *gin.Context) {
 		return
 	}
 
-	todo := models.NewTodo(todoDto.Id, todoDto.Description, todoDto.IsCompleted, todoDto.DueDate)
+	todo := models.Todo{ID: todoDto.Id, Description: todoDto.Description, IsCompleted: todoDto.IsCompleted, DueDate: todoDto.DueDate}
 
 	dbKey, isFound := c.Keys[DBKey]
 	if isFound {

@@ -22,12 +22,3 @@ type Todo struct {
 	IsCompleted bool
 	DueDate     string
 }
-
-func NewTodo(id int, description string, isCompleted bool, dueDate string) Todo {
-	return Todo{
-		ID:          id,
-		Description: description,
-		IsCompleted: isCompleted,
-		DueDate:     dueDate,
-	}
-}
