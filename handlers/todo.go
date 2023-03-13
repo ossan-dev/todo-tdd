@@ -5,23 +5,19 @@ import (
 	"strconv"
 
 	"todotdd/models"
+	"todotdd/repo"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
+
+const DBKey = "DB"
 
 type TodoDto struct {
 	Id          int    `json:"id" binding:"required"`
 	Description string `json:"description" binding:"required"`
 	IsCompleted bool   `json:"is_completed" binding:"required"`
 	DueDate     string `json:"due_date" binding:"required"`
-}
-
-type Todo struct {
-	ID          int
-	Description string
-	IsCompleted bool
-	DueDate     string
 }
 
 func UpdateTodo(c *gin.Context) {
@@ -37,15 +33,15 @@ func UpdateTodo(c *gin.Context) {
 		return
 	}
 
-	todo := Todo{ID: todoDto.Id, Description: todoDto.Description, IsCompleted: todoDto.IsCompleted, DueDate: todoDto.DueDate}
+	todo := models.NewTodo(todoDto.Id, todoDto.Description, todoDto.IsCompleted, todoDto.DueDate)
 
-	dbKey, isFound := c.Keys["DB"]
+	dbKey, isFound := c.Keys[DBKey]
 	if isFound {
 		db := dbKey.(*gorm.DB)
 		if db != nil {
-			err = db.First(&Todo{}, todo.ID).Updates(todo).Error
+			err = repo.UpdateTodo(db, todo)
 			if err != nil {
-				c.JSON(500, err)
+				c.JSON(http.StatusInternalServerError, models.TodoErr{Code: models.DbErr, Message: err.Error()})
 				return
 			}
 		}
