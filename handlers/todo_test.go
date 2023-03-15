@@ -153,5 +153,5 @@ func TestUpdateTodo_HappyPath(t *testing.T) {
 
 	UpdateTodo(c)
 
-	assert.Equal(t, 200, w.Code)
+	assert.Equal(t, http.StatusAccepted, w.Code)
 }

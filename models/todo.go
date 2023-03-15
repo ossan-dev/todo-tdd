@@ -8,8 +8,9 @@ const (
 )
 
 type TodoErr struct {
-	Code    string `json:"code"`
-	Message string `json:"message"`
+	StatusCode int    `json:"-"`
+	Code       string `json:"code"`
+	Message    string `json:"message"`
 }
 
 func (t TodoErr) Error() string {

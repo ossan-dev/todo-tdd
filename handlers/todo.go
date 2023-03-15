@@ -35,22 +35,15 @@ func UpdateTodo(c *gin.Context) {
 
 	todo := models.NewTodo(todoDto.Id, todoDto.Description, todoDto.IsCompleted, todoDto.DueDate)
 
-	dbKey, isFound := c.Keys[DBKey]
-	if isFound {
-		db := dbKey.(*gorm.DB)
-		if db != nil {
-			err = repo.UpdateTodo(db, todo)
-			if err != nil {
-				todoErr := err.(models.TodoErr)
-				if todoErr.Code == models.TodoNotFoundErr {
-					c.JSON(http.StatusNotFound, todoErr)
-					return
-				}
-				c.JSON(http.StatusInternalServerError, todoErr)
-				return
-			}
+	db := c.MustGet(DBKey).(*gorm.DB)
+	if db != nil {
+		err = repo.UpdateTodo(db, todo)
+		if err != nil {
+			todoErr := err.(models.TodoErr)
+			c.JSON(todoErr.StatusCode, todoErr)
+			return
 		}
 	}
 
-	c.JSON(200, nil)
+	c.JSON(http.StatusAccepted, nil)
 }
