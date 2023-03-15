@@ -41,11 +41,16 @@ func UpdateTodo(c *gin.Context) {
 		if db != nil {
 			err = repo.UpdateTodo(db, todo)
 			if err != nil {
-				c.JSON(http.StatusInternalServerError, models.TodoErr{Code: models.DbErr, Message: err.Error()})
+				todoErr := err.(models.TodoErr)
+				if todoErr.Code == models.TodoNotFoundErr {
+					c.JSON(http.StatusNotFound, todoErr)
+					return
+				}
+				c.JSON(http.StatusInternalServerError, todoErr)
 				return
 			}
 		}
 	}
 
-	c.JSON(http.StatusNotFound, models.TodoErr{Code: models.TodoNotFoundErr, Message: "unknown todo"})
+	c.JSON(200, nil)
 }

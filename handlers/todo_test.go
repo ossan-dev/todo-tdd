@@ -57,10 +57,22 @@ func TestUpdateTodo_NotFound(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
+
+	db, mock, _ := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+	defer db.Close()
+	conn, _ := db.Conn(c)
+	defer conn.Close()
+	gormDb, _ := gorm.Open(postgres.New(postgres.Config{
+		Conn: conn,
+	}), &gorm.Config{})
+
+	mock.ExpectQuery(`SELECT * FROM "todos" WHERE "todos"."id" = $1 ORDER BY "todos"."id" LIMIT 1`).WithArgs(1).WillReturnError(gorm.ErrRecordNotFound)
+
 	req := httptest.NewRequest(http.MethodPut, "/todos", strings.NewReader(`{ "description": "lorem ipsum", "is_completed": true, "due_date": "2023-05-04" }`))
 	req.Header.Set("Content-Type", "application/json")
 	c.Params = append(c.Params, gin.Param{Key: "id", Value: "1"})
 	c.Request = req
+	c.Set(DBKey, gormDb)
 
 	UpdateTodo(c)
 
