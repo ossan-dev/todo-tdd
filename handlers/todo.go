@@ -45,5 +45,5 @@ func UpdateTodo(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusAccepted, nil)
+	c.Writer.WriteHeader(http.StatusAccepted)
 }
