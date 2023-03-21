@@ -46,4 +46,5 @@ func UpdateTodo(c *gin.Context) {
 	}
 
 	c.Writer.WriteHeader(http.StatusAccepted)
+	c.Writer.WriteHeaderNow()
 }
