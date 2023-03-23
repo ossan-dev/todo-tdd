@@ -1,6 +1,9 @@
 package main
 
 import (
+	"context"
+	"time"
+
 	"todotdd/handlers"
 	"todotdd/models"
 
@@ -29,7 +32,9 @@ func main() {
 	r := gin.Default()
 
 	r.Use(func(c *gin.Context) {
-		c.Set("DB", db)
+		timeoutCtx, cancelFunc := context.WithTimeout(c.Request.Context(), time.Second*6)
+		defer cancelFunc()
+		c.Set("DB", db.WithContext(timeoutCtx))
 		c.Next()
 	})
 
