@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"time"
-
 	"todotdd/handlers"
 	"todotdd/models"
 
@@ -13,32 +12,28 @@ import (
 )
 
 func main() {
-	dsn := "host=localhost user=postgres password=postgres dbname=postgres port=54322 sslmode=disable"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	dsn := "host=localhost port=54322 user=postgres password=postgres dbname=postgres sslmode=disable"
+	gormDb, err := gorm.Open(postgres.Open(dsn))
 	if err != nil {
 		panic(err)
 	}
 
-	db.AutoMigrate(&models.Todo{})
+	gormDb.AutoMigrate(&models.Todo{})
 
-	// db bootstrap
-	todos := []models.Todo{
-		{ID: 1, Description: "first todo", IsCompleted: false, DueDate: "2023-06-01"},
-		{ID: 2, Description: "second todo", IsCompleted: true, DueDate: "2023-01-15"},
-		{ID: 3, Description: "third todo", IsCompleted: false, DueDate: "2023-02-28"},
-	}
-	db.Create(todos)
+	gormDb.Create(&models.Todo{Id: 1, Description: "sample todo", IsCompleted: false, DueDate: "2023-02-15"})
 
+	gin.SetMode(gin.DebugMode)
 	r := gin.Default()
 
-	r.Use(func(c *gin.Context) {
-		timeoutCtx, cancelFunc := context.WithTimeout(c.Request.Context(), time.Second*6)
+	r.Use(func(ctx *gin.Context) {
+		timeoutCtx, cancelFunc := context.WithTimeout(ctx.Request.Context(), time.Second*5)
 		defer cancelFunc()
-		c.Set("DB", db.WithContext(timeoutCtx))
-		c.Next()
+
+		ctx.Set(handlers.DbKey, gormDb.WithContext(timeoutCtx))
+		ctx.Next()
 	})
 
-	r.PUT("todos/:id", handlers.UpdateTodo)
+	r.PUT("/todos/:id", handlers.UpdateTodo)
 
-	r.Run()
+	r.Run(":8000")
 }
